@@ -1,0 +1,12 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("//doxygen:defs.bzl", "doxygen")
+
+cc_binary(
+    name = "binary",
+    srcs = ["main.cc"],
+)
+
+doxygen(
+    name = "binary_docs",
+    target = ":binary",
+)

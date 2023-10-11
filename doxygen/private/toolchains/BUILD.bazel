@@ -1,0 +1,18 @@
+load("//doxygen/private:doxygen.bzl", "doxygen_toolchain")
+
+doxygen_toolchain(
+    name = "doxygen_toolchain_impl",
+    doxygen = select({
+        "@platforms//os:linux": "@doxygen_linux_amd64//:doxygen",
+        "@platforms//os:macos": "@doxygen_macos_arm64//:doxygen",
+        "@platforms//os:windows": "@doxygen_windows_amd64//:doxygen",
+    }),
+    visibility = ["//visibility:public"],
+)
+
+toolchain(
+    name = "doxygen_toolchain",
+    toolchain = ":doxygen_toolchain_impl",
+    toolchain_type = "@rules_doxygen//doxygen:toolchain_type",
+    visibility = ["//visibility:public"],
+)

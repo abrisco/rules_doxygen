@@ -1,0 +1,4 @@
+exports_files(
+    ["README.md"],
+    visibility = ["//docs:__pkg__"],
+)

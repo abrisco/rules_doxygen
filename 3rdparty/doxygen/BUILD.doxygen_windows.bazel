@@ -1,0 +1,9 @@
+filegroup(
+    name = "doxygen",
+    srcs = ["doxygen.exe"],
+    data = glob(
+        include = ["*.dll"],
+        allow_empty = True,
+    ),
+    visibility = ["//visibility:public"],
+)

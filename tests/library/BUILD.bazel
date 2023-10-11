@@ -1,0 +1,13 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//doxygen:defs.bzl", "doxygen")
+
+cc_library(
+    name = "library",
+    srcs = ["lib.cc"],
+    hdrs = ["lib.h"],
+)
+
+doxygen(
+    name = "library_docs",
+    target = ":library",
+)

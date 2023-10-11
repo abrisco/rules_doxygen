@@ -1,0 +1,26 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+exports_files([
+    "doxygen.cfg",
+    "defs.bzl",
+])
+
+label_flag(
+    name = "config",
+    build_setting_default = ":doxygen.cfg",
+    visibility = ["//visibility:public"],
+)
+
+toolchain_type(
+    name = "toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+bzl_library(
+    name = "bzl_lib",
+    srcs = glob(["*.bzl"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//doxygen/private:bzl_lib",
+    ],
+)

@@ -1,0 +1,7 @@
+exports_files(["bin/doxygen"])
+
+alias(
+    name = "doxygen",
+    actual = ":bin/doxygen",
+    visibility = ["//visibility:public"],
+)
