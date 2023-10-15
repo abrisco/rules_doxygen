@@ -117,6 +117,18 @@ struct Arguments {
 #define DOXYGEN_RTF_OUTPUT "RTF_OUTPUT"
 #define DOXYGEN_XML_OUTPUT "XML_OUTPUT"
 
+/**
+ * @brief Returns whether or not a string ends with a particular value
+ *
+ * @param value The string to check
+ * @param ending The value to look for
+ * @return `true` if `value` contains the string `ending`.
+ */
+inline bool ends_with(std::string const& value, std::string const& ending) {
+    if (ending.size() > value.size()) return false;
+    return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
+
 const static std::string ILLEGAL_CONFIG_VALUES[] = {
     DOXYGEN_DOCBOOK_OUTPUT, DOXYGEN_HTML_OUTPUT, DOXYGEN_INPUT,
     DOXYGEN_LATEX_OUTPUT,   DOXYGEN_MAN_OUTPUT,  DOXYGEN_OUTPUT_DIRECTORY,
@@ -159,19 +171,42 @@ void render_config(const std::string& new_config,
         std::exit(-1);
     }
 
+    // Indicates that the line ended with a backslash (`\`) and
+    // when text is being filtered out that the next line will need
+    // filtering as well
+    bool capturing = false;
+
     while (getline(existing_stream, line)) {
+        if (capturing) {
+            if (!ends_with(line, "\\")) {
+                capturing = false;
+            }
+            continue;
+        }
+
         // Skip all config values that should be controlled by Bazel
+        bool skip = false;
         for (const std::string& str : ILLEGAL_CONFIG_VALUES) {
-            std::regex pattern(str, std::regex::extended);
+            std::regex pattern("^" + str, std::regex::extended);
             if (std::regex_search(line, pattern)) {
-                continue;
+                if (ends_with(line, "\\")) {
+                    capturing = true;
+                }
+                skip = true;
+                break;
             }
         }
 
+        if (skip) continue;
+
         // If a project name is specified omit the existing one.
         if (!project_name.empty()) {
-            std::regex pattern(DOXYGEN_PROJECT_NAME, std::regex::extended);
+            std::regex pattern(std::string("^") + DOXYGEN_PROJECT_NAME,
+                               std::regex::extended);
             if (std::regex_search(line, pattern)) {
+                if (ends_with(line, "\\")) {
+                    capturing = true;
+                }
                 continue;
             }
         }
@@ -209,16 +244,20 @@ void render_config(const std::string& new_config,
     }
 
     std::string inputs_str = "";
-    for (const std::string& str : inputs) {
-        inputs_str += str + " \\\n";
+    for (size_t i = 0; i < inputs.size(); ++i) {
+        inputs_str += "    " + inputs[i];
+        if (i < inputs.size() - 1) {
+            inputs_str += " \\\n";
+        }
     }
-    new_stream << DOXYGEN_INPUT << " = " << inputs_str << "\n";
+
+    new_stream << DOXYGEN_INPUT << " = \\\n" << inputs_str << "\n";
 
     new_stream.close();
 }
 
 /**
- * @brief Run the doxygen process
+ * @brief Run the doxygen process.
  *
  * @param doxygen The doxygen binary.
  * @param config The config file.
