@@ -259,9 +259,10 @@ int main(int argc, char** argv) {
     // Run Doxygen
     std::string stream = {};
     int result = run_doxygen(args.doxygen, args.config, stream);
-    if (result) {
+    if (result != 0) {
         std::cerr << stream << std::endl;
+        return -1;
     }
 
-    return result;
+    return 0;
 }
