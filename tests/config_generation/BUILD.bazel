@@ -1,0 +1,48 @@
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_test")
+load("//doxygen:defs.bzl", "doxygen")
+
+cc_binary(
+    name = "binary",
+    srcs = ["config_diff_test.cc"],
+    deps = ["@bazel_tools//tools/cpp/runfiles"],
+)
+
+write_file(
+    name = "base_config",
+    out = "base_doxygen.cfg",
+    content = """\
+DOCBOOK_OUTPUT = /tmp/doxygen
+HTML_OUTPUT = /tmp/doxygen
+INPUT = \\
+  main.cpp \\
+  main.h
+LATEX_OUTPUT = /tmp/doxygen
+MAN_OUTPUT = /tmp/doxygen
+OUTPUT_DIRECTORY = /tmp/doxygen
+PROJECT_NAME = "Config Generation Test"
+RTF_OUTPUT = /tmp/doxygen
+XML_OUTPUT = /tmp/doxygen
+""".splitlines(),
+    newline = "unix",
+)
+
+doxygen(
+    name = "binary_docs",
+    config = ":base_config",
+    target = ":binary",
+)
+
+filegroup(
+    name = "doxygen_config",
+    srcs = [":binary_docs"],
+    output_group = "doxygen_config",
+)
+
+cc_test(
+    name = "config_diff_test",
+    srcs = ["config_diff_test.cc"],
+    args = ["$(rlocationpath :doxygen_config)"],
+    data = [":doxygen_config"],
+    deps = ["@bazel_tools//tools/cpp/runfiles"],
+)

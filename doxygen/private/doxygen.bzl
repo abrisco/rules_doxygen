@@ -28,7 +28,7 @@ def _doxygen_inputs_aspect_impl(target, ctx):
         srcs.extend(getattr(ctx.rule.files, src_attr, []))
 
     return [DoxygenInputsInfo(
-        srcs = depset(srcs),
+        srcs = depset(sorted(srcs)),
     )]
 
 doxygen_inputs_aspect = aspect(
@@ -45,12 +45,12 @@ def _doxygen_impl(ctx):
     xml = None
     man_page = None
     doc_book = None
+    config = ctx.actions.declare_file("{}.doxygen.cfg".format(ctx.label.name))
 
     outputs = []
-    output_group_info = {}
+    output_group_info = {"doxygen_config": depset([config])}
     args = ctx.actions.args()
 
-    config = ctx.actions.declare_file("{}.doxygen.cfg".format(ctx.label.name))
     args.add("--config", config)
     args.add("--base_config", ctx.file.config)
     args.add("--project_name", ctx.attr.project_name if ctx.attr.project_name else ctx.attr.target.label.name)
