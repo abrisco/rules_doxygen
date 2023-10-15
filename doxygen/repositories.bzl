@@ -47,5 +47,14 @@ def doxygen_register_toolchains(register_toolchains = True):
         build_file = Label("//3rdparty/doxygen:BUILD.doxygen_macos.bazel"),
     )
 
+    maybe(
+        homebrew_bottle,
+        name = "doxygen_macos_amd64",
+        urls = ["https://ghcr.io/v2/homebrew/core/doxygen/blobs/sha256:539c3f7b0da1d9c75bd24c7f74703bf9454772474502d9e875eae0542047d4f4"],
+        sha256 = "539c3f7b0da1d9c75bd24c7f74703bf9454772474502d9e875eae0542047d4f4",
+        strip_prefix = "doxygen/1.9.8",
+        build_file = Label("//3rdparty/doxygen:BUILD.doxygen_macos.bazel"),
+    )
+
     if register_toolchains:
         native.register_toolchains(str(Label("//doxygen/private/toolchains:doxygen_toolchain")))
