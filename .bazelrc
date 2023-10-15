@@ -5,6 +5,13 @@
 ## https://bazel.build/docs/best-practices#bazelrc-file
 ###############################################################################
 
+# https://bazel.build/reference/command-line-reference#flag--enable_platform_specific_config
+common --enable_platform_specific_config
+
+# https://bazel.build/docs/windows#symlink
+startup --windows_enable_symlinks
+build:windows --enable_runfiles
+
 ###############################################################################
 ## Incompatibility flags
 ###############################################################################
