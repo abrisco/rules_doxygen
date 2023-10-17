@@ -1,0 +1,21 @@
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("//doxygen:defs.bzl", "doxygen_runner")
+
+# Define a config relative to the workspace root
+write_file(
+    name = "config",
+    out = "doxygen.cfg",
+    content = """\
+INPUT             = ./doxygen
+OUTPUT_DIRECTORY  = ./docs/rules_doxygen
+PROJECT_NAME      = "rules_doxygen"
+WARN_AS_ERROR     = YES
+RECURSIVE         = YES
+""".splitlines(),
+    newline = "unix",
+)
+
+doxygen_runner(
+    name = "doxygen_runner",
+    config = ":config",
+)

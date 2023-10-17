@@ -24,6 +24,7 @@ doxygen_register_toolchains()
 ## Rules
 
 - [doxygen](#doxygen)
+- [doxygen_runner](#doxygen_runner)
 - [doxygen_toolchain](#doxygen_toolchain)
 
 ---
@@ -33,8 +34,10 @@ doxygen_register_toolchains()
 load(
     "//doxygen/private:doxygen.bzl",
     _doxygen = "doxygen",
+    _doxygen_runner = "doxygen_runner",
     _doxygen_toolchain = "doxygen_toolchain",
 )
 
 doxygen = _doxygen
 doxygen_toolchain = _doxygen_toolchain
+doxygen_runner = _doxygen_runner
