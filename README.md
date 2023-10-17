@@ -26,6 +26,7 @@ doxygen_register_toolchains()
 ## Rules
 
 - [doxygen](#doxygen)
+- [doxygen_runner](#doxygen_runner)
 - [doxygen_toolchain](#doxygen_toolchain)
 
 ---
@@ -53,6 +54,25 @@ Generate documentation for C/C++ targets using doxygen.
 | <a id="doxygen-output"></a>output |  The type of output to produce.   | String | optional | "html" |
 | <a id="doxygen-project_name"></a>project_name |  An optional project name to use. If unset, the label name of <code>target</code> will be used.   | String | optional | "" |
 | <a id="doxygen-target"></a>target |  The C/C++ target to generate documentation for   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
+
+
+<a id="doxygen_runner"></a>
+
+## doxygen_runner
+
+<pre>
+doxygen_runner(<a href="#doxygen_runner-name">name</a>, <a href="#doxygen_runner-config">config</a>)
+</pre>
+
+A rule defining a doxygen exectuable that runs on a config from the root of the current workspace.
+
+**ATTRIBUTES**
+
+
+| Name  | Description | Type | Mandatory | Default |
+| :------------- | :------------- | :------------- | :------------- | :------------- |
+| <a id="doxygen_runner-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
+| <a id="doxygen_runner-config"></a>config |  The doxygen config file.   | <a href="https://bazel.build/concepts/labels">Label</a> | optional | //doxygen:config |
 
 
 <a id="doxygen_toolchain"></a>

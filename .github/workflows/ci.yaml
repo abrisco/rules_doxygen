@@ -74,6 +74,15 @@ jobs:
             bazel ${BAZEL_STARTUP_FLAGS[@]} test //...
           fi
 
+      # Explicitly test doxygen_binary
+      - name: Generate workspace docs
+        run: |
+          if [[ "${RUNNER_OS}" == "Windows" ]]; then
+            bazel ${BAZEL_STARTUP_FLAGS[@]} run ///tests/doxygen_runner
+          else
+            bazel ${BAZEL_STARTUP_FLAGS[@]} run //tests/doxygen_runner
+          fi
+
   ci-buildifier:
     runs-on: ubuntu-20.04
     steps:

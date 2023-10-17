@@ -159,10 +159,66 @@ doxygen = rule(
         "_runner": attr.label(
             executable = True,
             cfg = "exec",
+            default = Label("//doxygen/private:doxygen_action_runner"),
+        ),
+    },
+    toolchains = [str(Label("//doxygen:toolchain_type"))],
+)
+
+def _rlocationpath(file):
+    if file.short_path.startswith("../"):
+        return file.short_path[len("../"):]
+
+    workspace_name = file.owner.workspace_name
+    if not workspace_name:
+        workspace_name = "rules_doxygen"
+    return "{}/{}".format(workspace_name, file.short_path).lstrip("/")
+
+def _doxygen_runner_impl(ctx):
+    runner = ctx.executable._runner
+    executable = ctx.actions.declare_file("{}{}".format(ctx.label.name, runner.extension))
+    ctx.actions.symlink(
+        output = executable,
+        target_file = runner,
+        is_executable = True,
+    )
+
+    doxygen_toolchain = ctx.toolchains[Label("//doxygen:toolchain_type")]
+
+    runfiles = ctx.runfiles([ctx.file.config, runner], transitive_files = doxygen_toolchain.all_files)
+    runfiles = runfiles.merge(ctx.attr._runner[DefaultInfo].default_runfiles)
+
+    return [
+        DefaultInfo(
+            files = depset([executable]),
+            runfiles = runfiles,
+            executable = executable,
+        ),
+        RunEnvironmentInfo(
+            environment = {
+                "DOXYGEN": _rlocationpath(doxygen_toolchain.doxygen),
+                "DOXYGEN_CONFIG": _rlocationpath(ctx.file.config),
+            },
+        ),
+    ]
+
+doxygen_runner = rule(
+    doc = "A rule defining a doxygen exectuable that runs on a config from the root of the current workspace.",
+    implementation = _doxygen_runner_impl,
+    attrs = {
+        "config": attr.label(
+            doc = "The doxygen config file.",
+            allow_single_file = True,
+            default = Label("//doxygen:config"),
+        ),
+        "_runner": attr.label(
+            executable = True,
+            cfg = "exec",
             default = Label("//doxygen/private:doxygen_runner"),
         ),
     },
     toolchains = [str(Label("//doxygen:toolchain_type"))],
+    executable = True,
 )
 
 def _doxygen_toolchain_impl(ctx):
