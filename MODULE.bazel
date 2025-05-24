@@ -1,0 +1,27 @@
+"""abrisco/rules_doxygen"""
+
+module(
+    name = "rules_doxygen",
+    version = "0.0.4",
+)
+
+bazel_dep(name = "bazel_features", version = "1.21.0")
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+bazel_dep(name = "platforms", version = "0.0.11")
+bazel_dep(name = "rules_cc", version = "0.1.1")
+
+bazel_dep(name = "stardoc", version = "0.8.0", dev_dependency = True)
+
+internal_deps = use_extension("//doxygen/private:internal_extensions.bzl", "i")
+use_repo(
+    internal_deps,
+    "doxygen_linux_amd64",
+    "doxygen_macos_amd64",
+    "doxygen_macos_arm64",
+    "doxygen_windows_amd64",
+)
+
+register_toolchains(
+    "//doxygen/toolchain",
+    dev_dependency = True,
+)

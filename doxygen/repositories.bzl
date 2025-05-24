@@ -19,42 +19,56 @@ def doxygen_register_toolchains(register_toolchains = True):
 
     Args:
         register_toolchains (bool, optional): If `True`, the default toolchains will be registered.
+
+    Returns:
+        A list of repository names instantiated for the toolchains.
     """
 
+    linux_amd64 = "doxygen_linux_amd64"
     maybe(
         http_archive,
-        name = "doxygen_linux_amd64",
+        name = linux_amd64,
         urls = ["https://github.com/doxygen/doxygen/releases/download/Release_1_9_8/doxygen-1.9.8.linux.bin.tar.gz"],
         sha256 = "dda773bdc62384b7d796fe8b6c5029daad72483e4c8ad4abf6ee9fb98b649388",
         strip_prefix = "doxygen-1.9.8",
         build_file = Label("//3rdparty/doxygen:BUILD.doxygen_linux.bazel"),
     )
 
-    maybe(
-        http_archive,
-        name = "doxygen_windows_amd64",
-        urls = ["https://github.com/doxygen/doxygen/releases/download/Release_1_9_8/doxygen-1.9.8.windows.x64.bin.zip"],
-        sha256 = "03f98f585acee18df0575262feffccc8a93a5aeacd4ee8c21872aeef12532244",
-        build_file = Label("//3rdparty/doxygen:BUILD.doxygen_windows.bazel"),
-    )
-
+    macos_amd64 = "doxygen_macos_amd64"
     maybe(
         homebrew_bottle,
-        name = "doxygen_macos_arm64",
-        urls = ["https://ghcr.io/v2/homebrew/core/doxygen/blobs/sha256:7699071865959f0d7a6dca86a21bd302a4a628e083f167214adfaa805b32b95c"],
-        sha256 = "7699071865959f0d7a6dca86a21bd302a4a628e083f167214adfaa805b32b95c",
-        strip_prefix = "doxygen/1.9.8",
-        build_file = Label("//3rdparty/doxygen:BUILD.doxygen_macos.bazel"),
-    )
-
-    maybe(
-        homebrew_bottle,
-        name = "doxygen_macos_amd64",
+        name = macos_amd64,
         urls = ["https://ghcr.io/v2/homebrew/core/doxygen/blobs/sha256:539c3f7b0da1d9c75bd24c7f74703bf9454772474502d9e875eae0542047d4f4"],
         sha256 = "539c3f7b0da1d9c75bd24c7f74703bf9454772474502d9e875eae0542047d4f4",
         strip_prefix = "doxygen/1.9.8",
         build_file = Label("//3rdparty/doxygen:BUILD.doxygen_macos.bazel"),
     )
 
+    macos_arm64 = "doxygen_macos_arm64"
+    maybe(
+        homebrew_bottle,
+        name = macos_arm64,
+        urls = ["https://ghcr.io/v2/homebrew/core/doxygen/blobs/sha256:7699071865959f0d7a6dca86a21bd302a4a628e083f167214adfaa805b32b95c"],
+        sha256 = "7699071865959f0d7a6dca86a21bd302a4a628e083f167214adfaa805b32b95c",
+        strip_prefix = "doxygen/1.9.8",
+        build_file = Label("//3rdparty/doxygen:BUILD.doxygen_macos.bazel"),
+    )
+
+    windows_amd64 = "doxygen_windows_amd64"
+    maybe(
+        http_archive,
+        name = windows_amd64,
+        urls = ["https://github.com/doxygen/doxygen/releases/download/Release_1_9_8/doxygen-1.9.8.windows.x64.bin.zip"],
+        sha256 = "03f98f585acee18df0575262feffccc8a93a5aeacd4ee8c21872aeef12532244",
+        build_file = Label("//3rdparty/doxygen:BUILD.doxygen_windows.bazel"),
+    )
+
     if register_toolchains:
         native.register_toolchains(str(Label("//doxygen/private/toolchains:doxygen_toolchain")))
+
+    return [
+        linux_amd64,
+        macos_amd64,
+        macos_arm64,
+        windows_amd64,
+    ]

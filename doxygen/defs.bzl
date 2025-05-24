@@ -4,7 +4,17 @@ Bazel rules for generating code documentation with [Doxygen](https://www.doxygen
 
 ## Setup
 
-```starlark
+### bzlmod
+
+```python
+bazel_dep(name = "rules_doxygen", version = "0.0.5")
+
+register_toolchains("@rules_doxygen//doxygen/toolchain")
+```
+
+### WORKSPACE.bazel
+
+```python
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 # See releases for urls and checksums
