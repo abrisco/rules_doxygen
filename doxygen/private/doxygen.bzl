@@ -1,5 +1,7 @@
 """Bazel rules for running Doxygen"""
 
+load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
+
 DoxygenInfo = provider(
     doc = "Information on doxygen outputs. Only one attribute is expected to be set at a time.",
     fields = {
@@ -165,14 +167,11 @@ doxygen = rule(
     toolchains = [str(Label("//doxygen:toolchain_type"))],
 )
 
-def _rlocationpath(file):
+def _rlocationpath(file, workspace_name):
     if file.short_path.startswith("../"):
         return file.short_path[len("../"):]
 
-    workspace_name = file.owner.workspace_name
-    if not workspace_name:
-        workspace_name = "rules_doxygen"
-    return "{}/{}".format(workspace_name, file.short_path).lstrip("/")
+    return "{}/{}".format(workspace_name, file.short_path)
 
 def _doxygen_runner_impl(ctx):
     runner = ctx.executable._runner
@@ -196,8 +195,8 @@ def _doxygen_runner_impl(ctx):
         ),
         RunEnvironmentInfo(
             environment = {
-                "DOXYGEN": _rlocationpath(doxygen_toolchain.doxygen),
-                "DOXYGEN_CONFIG": _rlocationpath(ctx.file.config),
+                "DOXYGEN": _rlocationpath(doxygen_toolchain.doxygen, ctx.workspace_name),
+                "DOXYGEN_CONFIG": _rlocationpath(ctx.file.config, ctx.workspace_name),
             },
         ),
     ]

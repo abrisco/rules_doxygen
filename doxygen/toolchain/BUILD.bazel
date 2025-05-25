@@ -1,0 +1,14 @@
+load("//doxygen/private:doxygen.bzl", "doxygen_toolchain")
+
+doxygen_toolchain(
+    name = "doxygen_toolchain",
+    doxygen = "//3rdparty/doxygen",
+    visibility = ["//visibility:public"],
+)
+
+toolchain(
+    name = "toolchain",
+    toolchain = ":doxygen_toolchain",
+    toolchain_type = "//doxygen:toolchain_type",
+    visibility = ["//visibility:public"],
+)

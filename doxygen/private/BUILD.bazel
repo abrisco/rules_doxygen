@@ -14,8 +14,16 @@ cc_binary(
     deps = ["@bazel_tools//tools/cpp/runfiles"],
 )
 
+# TODO: https://github.com/bazelbuild/rules_cc/issues/279
+bzl_library(
+    name = "rules_cc",
+    srcs = ["@rules_cc//cc:bzl_srcs"],
+    deps = ["@rules_cc//cc/common"],
+)
+
 bzl_library(
     name = "bzl_lib",
     srcs = glob(["*.bzl"]),
     visibility = ["//doxygen:__pkg__"],
+    deps = [":rules_cc"],
 )

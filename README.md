@@ -6,7 +6,17 @@ Bazel rules for generating code documentation with [Doxygen](https://www.doxygen
 
 ## Setup
 
-```starlark
+### bzlmod
+
+```python
+bazel_dep(name = "rules_doxygen", version = "0.0.5")
+
+register_toolchains("@rules_doxygen//doxygen/toolchain")
+```
+
+### WORKSPACE.bazel
+
+```python
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 # See releases for urls and checksums
@@ -32,13 +42,14 @@ doxygen_register_toolchains()
 ---
 ---
 
-
 <a id="doxygen"></a>
 
 ## doxygen
 
 <pre>
-doxygen(<a href="#doxygen-name">name</a>, <a href="#doxygen-config">config</a>, <a href="#doxygen-data">data</a>, <a href="#doxygen-output">output</a>, <a href="#doxygen-project_name">project_name</a>, <a href="#doxygen-target">target</a>)
+load("@rules_doxygen//doxygen:defs.bzl", "doxygen")
+
+doxygen(<a href="#doxygen-name">name</a>, <a href="#doxygen-data">data</a>, <a href="#doxygen-config">config</a>, <a href="#doxygen-output">output</a>, <a href="#doxygen-project_name">project_name</a>, <a href="#doxygen-target">target</a>)
 </pre>
 
 Generate documentation for C/C++ targets using doxygen.
@@ -49,10 +60,10 @@ Generate documentation for C/C++ targets using doxygen.
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="doxygen-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
-| <a id="doxygen-config"></a>config |  The doxygen config file.   | <a href="https://bazel.build/concepts/labels">Label</a> | optional | //doxygen:config |
-| <a id="doxygen-data"></a>data |  Additional source files to add to the Doxygen action.   | <a href="https://bazel.build/concepts/labels">List of labels</a> | optional | [] |
-| <a id="doxygen-output"></a>output |  The type of output to produce.   | String | optional | "html" |
-| <a id="doxygen-project_name"></a>project_name |  An optional project name to use. If unset, the label name of <code>target</code> will be used.   | String | optional | "" |
+| <a id="doxygen-data"></a>data |  Additional source files to add to the Doxygen action.   | <a href="https://bazel.build/concepts/labels">List of labels</a> | optional |  `[]`  |
+| <a id="doxygen-config"></a>config |  The doxygen config file.   | <a href="https://bazel.build/concepts/labels">Label</a> | optional |  `"@rules_doxygen//doxygen:config"`  |
+| <a id="doxygen-output"></a>output |  The type of output to produce.   | String | optional |  `"html"`  |
+| <a id="doxygen-project_name"></a>project_name |  An optional project name to use. If unset, the label name of `target` will be used.   | String | optional |  `""`  |
 | <a id="doxygen-target"></a>target |  The C/C++ target to generate documentation for   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
 
 
@@ -61,6 +72,8 @@ Generate documentation for C/C++ targets using doxygen.
 ## doxygen_runner
 
 <pre>
+load("@rules_doxygen//doxygen:defs.bzl", "doxygen_runner")
+
 doxygen_runner(<a href="#doxygen_runner-name">name</a>, <a href="#doxygen_runner-config">config</a>)
 </pre>
 
@@ -72,7 +85,7 @@ A rule defining a doxygen exectuable that runs on a config from the root of the 
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="doxygen_runner-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
-| <a id="doxygen_runner-config"></a>config |  The doxygen config file.   | <a href="https://bazel.build/concepts/labels">Label</a> | optional | //doxygen:config |
+| <a id="doxygen_runner-config"></a>config |  The doxygen config file.   | <a href="https://bazel.build/concepts/labels">Label</a> | optional |  `"@rules_doxygen//doxygen:config"`  |
 
 
 <a id="doxygen_toolchain"></a>
@@ -80,6 +93,8 @@ A rule defining a doxygen exectuable that runs on a config from the root of the 
 ## doxygen_toolchain
 
 <pre>
+load("@rules_doxygen//doxygen:defs.bzl", "doxygen_toolchain")
+
 doxygen_toolchain(<a href="#doxygen_toolchain-name">name</a>, <a href="#doxygen_toolchain-doxygen">doxygen</a>)
 </pre>
 

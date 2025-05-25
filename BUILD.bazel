@@ -1,4 +1,8 @@
 exports_files(
-    ["README.md"],
-    visibility = ["//docs:__pkg__"],
+    [
+        "README.md",
+        "MODULE.bazel",
+        "version.bzl",
+    ],
+    visibility = ["//visibility:public"],
 )
