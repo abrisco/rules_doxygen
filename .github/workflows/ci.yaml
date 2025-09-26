@@ -9,10 +9,6 @@ on:
       - opened
       - synchronize
 
-defaults:
-  run:
-    shell: bash
-
 env:
   BAZEL_STARTUP_FLAGS: --bazelrc=${{ github.workspace }}/.github/github.bazelrc
 
@@ -24,31 +20,41 @@ jobs:
         include:
           - os: macos-latest
           - os: ubuntu-24.04
+          # - os: windows-latest
     steps:
       # Checkout the code
       - uses: actions/checkout@v4
-
       - uses: bazel-contrib/setup-bazel@0.14.0
         with:
           bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+
+      - name: Setup Bazelrc (Windows)
+        run: |
+          echo "TEMP=$env:RUNNER_TEMP" >> "$env:GITHUB_ENV"
+          echo "TMP=$env:RUNNER_TEMP" >> "$env:GITHUB_ENV"
+          echo "startup --output_user_root=D:/bzl" > ./user.bazelrc
+        if: startswith(runner.os, 'Windows')
+      - name: Setup Bazelrc
+        run: |
+          echo "common --keep_going" >> ./user.bazelrc
 
       # Build and Test the code
-      - name: Test
-        run: |
-          if [[ "${RUNNER_OS}" == "Windows" ]]; then
-            bazel ${BAZEL_STARTUP_FLAGS[@]} test ///...
-          else
-            bazel ${BAZEL_STARTUP_FLAGS[@]} test //...
-          fi
+      - name: Test (Unix)
+        run: bazel ${BAZEL_STARTUP_FLAGS[@]} test //...
+        if: startswith(runner.os, 'Windows') != true
+      - name: Test (Windows)
+        run: bazel $env:BAZEL_STARTUP_FLAGS test //...
+        if: startswith(runner.os, 'Windows')
 
       # Explicitly test doxygen_binary
-      - name: Generate workspace docs
-        run: |
-          if [[ "${RUNNER_OS}" == "Windows" ]]; then
-            bazel ${BAZEL_STARTUP_FLAGS[@]} run ///tests/doxygen_runner
-          else
-            bazel ${BAZEL_STARTUP_FLAGS[@]} run //tests/doxygen_runner
-          fi
+      - name: Generate workspace docs (Unix)
+        run: bazel ${BAZEL_STARTUP_FLAGS[@]} run //tests/doxygen_runner
+        if: startswith(runner.os, 'Windows') != true
+      - name: Generate workspace docs (Windows)
+        run: bazel $env:BAZEL_STARTUP_FLAGS run //tests/doxygen_runner
+        if: startswith(runner.os, 'Windows')
 
   ci-buildifier:
     runs-on: ubuntu-latest
@@ -68,6 +74,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: DoozyX/clang-format-lint-action@v0.14
         with:
-          source: '.'
-          extensions: 'h,c,cc,proto'
+          source: "."
+          extensions: "h,c,cc,proto"
           clangFormatVersion: 14
