@@ -6,31 +6,21 @@ Bazel rules for generating code documentation with [Doxygen](https://www.doxygen
 
 ## Setup
 
-### bzlmod
+### MODULE.bazel
 
 ```python
-bazel_dep(name = "rules_doxygen", version = "0.0.5")
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-register_toolchains("@rules_doxygen//doxygen/toolchain")
-```
-
-### WORKSPACE.bazel
-
-```python
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-# See releases for urls and checksums
 http_archive(
     name = "rules_doxygen",
-    sha256 = "{sha256}",
-    urls = ["https://github.com/abrisco/rules_doxygen/releases/download/{version}/rules_doxygen-v{version}.tar.gz"],
+    # ...
+    # ...
+    # See releases page
 )
 
-load("@rules_doxygen//doxygen:repositories.bzl", "rules_doxygen_dependencies", "doxygen_register_toolchains")
-
-rules_doxygen_dependencies()
-
-doxygen_register_toolchains()
+register_toolchains(
+    "@rules_doxygen//doxygen/toolchain",
+)
 ```
 
 ## Rules

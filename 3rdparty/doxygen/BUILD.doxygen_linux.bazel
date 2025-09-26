@@ -1,7 +1,5 @@
-exports_files(["bin/doxygen"])
-
-alias(
+filegroup(
     name = "doxygen",
-    actual = ":bin/doxygen",
+    srcs = ["bin/doxygen"],
     visibility = ["//visibility:public"],
 )

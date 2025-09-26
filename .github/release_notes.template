@@ -2,19 +2,18 @@
 
 Additional documentation can be found at: https://github.com/abrisco/rules_doxygen
 
-## Bzlmod
+## Setup
 
 ```python
-bazel_dep(name = "rules_doxygen", version = "{version}")
-```
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-## WORKSPACE
-
-```python
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
     name = "rules_doxygen",
     integrity = "sha256-{sha256_base64}",
     urls = ["https://github.com/abrisco/rules_doxygen/releases/download/{version}/rules_doxygen-{version}.tar.gz"],
+)
+
+register_toolchains(
+    "@rules_doxygen//doxygen/toolchain",
 )
 ```
